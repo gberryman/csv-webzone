@@ -1,0 +1,38 @@
+<html>
+	<head>
+		<title>{{ title }} - CSV WORLD</title>
+		<style>
+		table, th, td {
+		  border: 1px solid black;
+		  border-collapse: collapse;
+		}
+		a.button {
+			-webkit-appearance: button;
+			-moz-appearance: button;
+			appearance: button;
+
+			text-decoration: none;
+			color: initial;
+		}
+		</style>
+	</head>
+	<body>
+		<h1>let's display a CSV</h1>
+		<p><a href="{{ url_for('index') }}">Home</a></p>
+		<p><a href="{{ url_for('upload') }}">Upload New CSV</a></p>
+		<table>
+			<tr>
+				{% for field in fieldnames %}
+				<th>{{ field }}</th>
+				{% endfor %}
+			</tr>
+			{% for row in reader %}
+			<tr>
+				{% for field in fieldnames %}
+				<td>{{ row[field] }}</td>
+				{% endfor %}
+			</tr>
+			{% endfor %}
+		</table>
+	</body>
+</html>

@@ -1,0 +1,7 @@
+dist
+venv
+.Python
+uploads
+plots
+*.egg-info
+

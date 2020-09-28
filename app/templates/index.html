@@ -1,0 +1,53 @@
+<html>
+	<head>
+		<title>{{ title }} - CSV WORLD</title>
+		<style>
+		a.button {
+			background-color:grey;
+			border:1px solid black;
+			color:white;
+			padding: 0.2em 0.2em;
+			text-decoration: none;
+		}
+		table.bordered, th.bordered, td.bordered {
+		  border: 1px solid black;
+		  border-collapse: collapse;
+		}
+		</style>
+	</head>
+	<body>
+		<h1>let's upload some CSVs</h1>
+		<p><a href="{{ url_for('index') }}">Home</a></p>
+		<p><a href="{{ url_for('upload') }}">Upload New CSV</a></p>
+		<hr>
+		<table>
+			<tr><th>Uploaded Files</th></tr>
+			{% for filename in uploads %}
+			<tr>
+				<td>{{ filename }}</td>
+				<td><a href="{{ url_for('index', selected_file = filename) }}" class = 'button'>Just the stats, please</a></td>
+				<td><a href="{{ url_for('display', filename = filename) }}" class = 'button'>The whole file</a></td>
+			</tr>
+			{% endfor %}
+		</table>
+		{% if selected %}
+		<hr>
+		<div>
+			<h2>Stats for {{ selected_file }}</h2>
+			<table class='bordered'>
+				<tr class='bordered'>
+					<th class='bordered'>Average people per year</th>
+					<th class='bordered'>Year with the most people</th>
+					<th class='bordered'>Year with the fewest people</th>
+				</tr>
+				<tr class='bordered'>
+					<td class='bordered'>{{ stats['average'] }}</td>
+					<td class='bordered'>{{ stats['max'] }}</td>
+					<td class='bordered'>{{ stats['min'] }}</td>
+				</tr>
+			</table>
+			<img src="{{ url_for('get_plot', plot=plot) }}">
+		</div>
+		{% endif %}
+	</body>
+</html>
