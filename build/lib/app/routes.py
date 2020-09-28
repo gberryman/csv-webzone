@@ -7,6 +7,9 @@ from app import app
 
 app.uploads = {}
 
+
+# The homepage of our little website. Displays a list of uploaded CSVs 
+# and shows stats for one of them at a time.
 @app.route('/')
 @app.route('/index')
 @app.route('/index/<path:selected_file>')
@@ -24,6 +27,8 @@ def index(selected_file=''):
 		return render_template('index.html', selected=False, uploads=list(app.uploads.keys()))
 
 
+# The upload page. A very simple form with a file selection dialogue. 
+# Would not survive contact with the enemy.
 @app.route('/upload', methods = ['GET','POST'])
 def upload():
 	if request.method=='POST':        
@@ -40,6 +45,7 @@ def upload():
 
 	return render_template('upload.html')
 
+# A page for displaying the CSV files that were uploaded. 
 @app.route('/display/<path:filename>')
 def display(filename):
 	filename = safe_join(app.config['UPLOAD_FOLDER'], filename)
@@ -50,10 +56,12 @@ def display(filename):
 	datafile.close()
 	return template
 
+# This is how we serve the image files on the main page.
 @app.route('/get_plot/<path:plot>')
 def get_plot(plot):
 	return send_file(safe_join(app.config['PLOT_FOLDER'], plot))
 
+# This is called once, on upload, and generates a plot image and a few stats about the file.
 def calculate_stats(filename):
 	file = open(safe_join(app.config['UPLOAD_FOLDER'], filename))
 	datareader = csv.DictReader(file)
@@ -73,6 +81,8 @@ def calculate_stats(filename):
 		'max': max_item
 	}
 
+# This is where the actual plot generation happens. It renders the plot using matplotlib, 
+# then saves it to our plots folder for use on the homepage.
 def render_plot(stats, plot_filename):
     fig = Figure()
     ax = fig.subplots()
@@ -88,6 +98,10 @@ def render_plot(stats, plot_filename):
     fig.align_xlabels
     fig.savefig(safe_join(app.config['PLOT_FOLDER'], plot_filename))
 
+# This is a wrapper for the python CSV dict reader.
+# Right now it just replaces blank 'state' entries with the word 'BLANK' but it could be extended easily.
+# Most importantly, it does this lazily so our webserver doesn't have to hold the whole file in memory.
+# (We still generate the html file with a jinja template, so we do hold THAT, but at least we don't hold both.)
 def clean_reader(reader):
     for row in reader:
         if row['state']=='':
